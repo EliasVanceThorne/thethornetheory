@@ -199,7 +199,7 @@ permalink: /subspaceblog.html
         <div class="sub-title">CAPTAIN'S LOG // RECENT TRANSMISSIONS ARCHIVE</div>
 
         {% for post in site.posts %}
-        <article class="blog-post" id="post-{{ post.url | slugify }}">
+        <article class="blog-post" id="{{ post.slug }}">
             <div class="post-header">
                 <h2 class="post-title">{{ post.title }}</h2>
                 <span class="post-date">STARDATE: {{ post.stardate }}</span>
@@ -215,9 +215,9 @@ permalink: /subspaceblog.html
 
             <div class="comms-section">
                 <h3>SUBSPACE // INCOMING TRANSMISSIONS</h3>
-                <div class="comments-list" id="list-{{ post.url | slugify }}"></div>
+                <div class="comments-list" id="list-{{ post.slug }}"></div>
 
-                <form class="comment-form" onsubmit="transmitComment(event, this, '{{ post.url | slugify }}')">
+                <form class="comment-form" onsubmit="transmitComment(event, this, '{{ post.slug }}')">
                     <div class="form-row">
                         <input type="text" placeholder="SENDER ID" required class="input-sender">
                         <input type="password" placeholder="AUTH CODE" required class="input-auth">
