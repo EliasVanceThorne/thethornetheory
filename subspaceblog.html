@@ -121,9 +121,6 @@ permalink: /subspaceblog.html
         .post-body { color: #FFFFFF; font-size: 1.15rem; line-height: 1.6; letter-spacing: 0.5px; text-transform: none; opacity: 0.9; }
         .post-body p { margin-top: 0; margin-bottom: 15px; }
 
-        .post-footer { margin-top: 20px; display: flex; gap: 10px; border-bottom: 1px dashed #333344; padding-bottom: 20px; }
-        .post-tag { background-color: #151522; color: #CC99CC; padding: 4px 12px; font-size: 0.9rem; border-radius: 5px; font-weight: bold; }
-
         /* COMMS SECTION */
         .comms-section { margin-top: 20px; }
         .comms-section h3 { color: #FFCC33; font-size: 1.2rem; letter-spacing: 1px; margin-bottom: 15px; }
@@ -206,11 +203,6 @@ permalink: /subspaceblog.html
             </div>
             <div class="post-body">
                 {{ post.content }}
-            </div>
-            <div class="post-footer">
-                {% for tag in post.tags %}
-                    <span class="post-tag">#{{ tag }}</span>
-                {% endfor %}
             </div>
 
             <div class="comms-section">
