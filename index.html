@@ -87,17 +87,17 @@
         }
 
         h1 { font-size: 3.5rem; color: #9999FF; margin: 0; letter-spacing: 3px; line-height: 1; }
-        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 20px; }
+        
+        /* IL TUO STILE GIALLO ORIGINALE */
+        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 0px; }
 
-        /* STILE PER LA SEQUENZA DI ACCESSO "THE THORNE THEORY" */
-        .console-log {
-            font-size: 1rem;
-            color: #CC99CC;
-            letter-spacing: 1px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #222233;
-            padding-bottom: 15px;
+        /* LA NUOVA CASCATA DI CARICAMENTO CON LO STESSO IDENTICO STILE */
+        .cascade-log { 
+            color: #FFCC33; 
+            font-size: 1.2rem; 
+            margin-top: 5px;
+            margin-bottom: 20px; 
+            line-height: 1.4;
         }
 
         .welcome-container {
@@ -173,13 +173,13 @@
         <h1>MAIN TERMINAL</h1>
         <div class="sub-title">STARFLEET COMMAND DATA NETWORK // ACCESS POINT 01</div>
 
-        <!-- NUOVA SEQUENZA DI INIZIALIZZAZIONE LOG DEL TERMINALE -->
-        <div class="console-log">
-            <span style="color: #9999FF;">[LINK]</span> SUBSPACE CONNECTION ESTABLISHED VIA DEEP SPACE 9 // UPLINK SECURE<br>
-            <span style="color: #FFCC33;">[AUTH]</span> BYPASSING DIRECTORY RESTRICTIONS... ACCESS GRANTED BY OMEGA CODE<br>
-            <span style="color: #FF9900;">[DECRYPT]</span> DECRYPTING PROTECTED DATA MATRIX [SIGMA-992-THORNE]<br>
-            <span style="color: #00FFCC;">[BRIDGE]</span> ESTABLISHING QUANTUM LINK TO CORE ARCHIVE... CONNECTION SUCCESSFUL<br>
-            <span style="color: #FF6666; font-weight: bold;">[RUN]</span> INITIALIZING HIGH-SECURITY MATRIX CONSOLE: <span style="color: #FFFFFF; font-weight: bold; text-shadow: 0 0 5px rgba(255,153,0,0.5);">"THE THORNE THEORY"</span> // VERSION 4.1.0-BETA
+        <!-- CASCATA DI COMANDI IN GIALLO, UN RIGO ALLA VOLTA, SENZA FRONZOLI -->
+        <div class="cascade-log">
+            SUBSPACE CONNECTION ESTABLISHED VIA DEEP SPACE 9 // UPLINK SECURE<br>
+            BYPASSING DIRECTORY RESTRICTIONS // ACCESS GRANTED BY OMEGA CODE<br>
+            DECRYPTING PROTECTED DATA MATRIX // QUANTUM KEY KEY-SIGMA-992-THORNE<br>
+            ESTABLISHING QUANTUM LINK TO CORE ARCHIVE // INTEGRITY AT 100%<br>
+            INITIALIZING CONSOLE INTERFACE // ROUTING PROGRAM: "THE THORNE THEORY" // RUNTIME 4.1.0-BETA
         </div>
 
         <div class="welcome-container">
