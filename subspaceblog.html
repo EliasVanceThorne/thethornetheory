@@ -1,10 +1,12 @@
+---
+permalink: /subspaceblog.html
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>U.S.S. ULYSSES - Captain's Log</title>
-    <!-- Supabase CDN Link -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
@@ -181,7 +183,6 @@
 </head>
 <body>
 
-<!-- NAVIGAZIONE LATERALE LCARS (Sincronizzata con seccodgen) -->
 <div class="lcars-left">
     <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
     <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
@@ -197,26 +198,26 @@
         <h1>U.S.S. ULYSSES (NCC-1567)</h1>
         <div class="sub-title">CAPTAIN'S LOG // RECENT TRANSMISSIONS ARCHIVE</div>
 
-        <!-- POST 1 -->
-        <article class="blog-post" id="post-1">
+        {% for post in site.posts %}
+        <article class="blog-post" id="post-{{ post.url | slugify }}">
             <div class="post-header">
-                <h2 class="post-title">Transmission 1.126140</h2>
-                <span class="post-date">STARDATE: 948386.9</span>
+                <h2 class="post-title">{{ post.title }}</h2>
+                <span class="post-date">STARDATE: {{ post.stardate }}</span>
             </div>
             <div class="post-body">
-                <p>I stopped on a planet that we might call Class L (Marginal) according to Starfleet classification, at position L 866.15 / S+.</p>
-                <p>I have eight more planets to examine in this system, after which I can continue the exploratory mission to a more distant sector.</p>
+                {{ post.content }}
             </div>
             <div class="post-footer">
-                <span class="post-tag"></span>
-                <span class="post-tag"></span>
+                {% for tag in post.tags %}
+                    <span class="post-tag">#{{ tag }}</span>
+                {% endfor %}
             </div>
 
             <div class="comms-section">
                 <h3>SUBSPACE // INCOMING TRANSMISSIONS</h3>
-                <div class="comments-list" id="list-post-1"></div>
+                <div class="comments-list" id="list-{{ post.url | slugify }}"></div>
 
-                <form class="comment-form" onsubmit="transmitComment(event, this, 'post-1')">
+                <form class="comment-form" onsubmit="transmitComment(event, this, '{{ post.url | slugify }}')">
                     <div class="form-row">
                         <input type="text" placeholder="SENDER ID" required class="input-sender">
                         <input type="password" placeholder="AUTH CODE" required class="input-auth">
@@ -226,36 +227,7 @@
                 </form>
             </div>
         </article>
-
-        <!-- POST 2 -->
-        <article class="blog-post" id="post-2">
-            <div class="post-header">
-                <h2 class="post-title">02. Lateral Sensor Array Calibration</h2>
-                <span class="post-date">STARDATE: CALCULATING...</span>
-            </div>
-            <div class="post-body">
-                <p>SUBSPACE TRANSMISSION INCOMING...</p>
-                <p>ESTIMATED TIME: UNAVAILABLE</p>
-            </div>
-            <div class="post-footer">
-                <span class="post-tag">#Maintenance</span>
-                <span class="post-tag">#LCARS</span>
-            </div>
-
-            <div class="comms-section">
-                <h3>SUBSPACE // INCOMING TRANSMISSIONS</h3>
-                <div class="comments-list" id="list-post-2"></div>
-
-                <form class="comment-form" onsubmit="transmitComment(event, this, 'post-2')">
-                    <div class="form-row">
-                        <input type="text" placeholder="SENDER ID" required class="input-sender">
-                        <input type="password" placeholder="AUTH CODE" required class="input-auth">
-                        <textarea placeholder="ENTER TRANSMISSION..." required class="input-text"></textarea>
-                        <button type="submit" class="btn-send">TRANSMIT</button>
-                    </div>
-                </form>
-            </div>
-        </article>
+        {% endfor %}
 
         <div class="footer">
             LCARS INTERFACE 3.6B | ENCRYPTED CAPTAIN'S LOG | STARFLEET AUTHORIZED TRANSMISSION ONLY
@@ -271,7 +243,6 @@
     const ADMIN_SENDER = "ADMIN";
     const ADMIN_KEY = "Sigma-Theta-9-7-Alpha"; // Master Bypass Key
 
-    // Corretto l'inizializzazione del client per evitare conflitti di nomi
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     function convertTNG(day, month, year, hour, minute) {
@@ -290,18 +261,13 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        const currentSD = getFutureStardate();
-        document.getElementById('stardate-post1').innerText = `STARDATE: ${currentSD}`;
-        document.getElementById('stardate-post2').innerText = `STARDATE: ${currentSD}`;
-        
-        // Fetch all transmissions from deep space database
+        // Carica e distribuisce tutte le trasmissioni da Supabase
         loadAllTransmissions();
     });
 
     // --- DATABASE CORE FUNCTIONS ---
 
     async function loadAllTransmissions() {
-        // Request entries from database sorted by id
         const { data, error } = await supabaseClient.from('transmissions').select('*').order('id', { ascending: true });
         
         if (error) {
@@ -309,11 +275,10 @@
             return;
         }
 
-        // Clear existing lists
-        // document.getElementById('list-post-1').innerHTML = '';
-        // document.getElementById('list-post-2').innerHTML = '';
+        // Resetta tutte le liste dei commenti per evitare duplicazioni grafiche
+        document.querySelectorAll('.comments-list').forEach(list => list.innerHTML = '');
 
-        // Distribute comments to their respective posts
+        // Smista i commenti nei relativi box dei post corrispondenti
         if (data) {
             data.forEach(item => {
                 const targetList = document.getElementById(`list-${item.post_id}`);
@@ -352,7 +317,6 @@
             return;
         }
 
-        // Securely push transmission data to Supabase
         const { error } = await supabaseClient.from('transmissions').insert([
             { 
                 sender: senderValue, 
@@ -369,7 +333,6 @@
             return;
         }
 
-        // Reset inputs and reload display
         senderInput.value = '';
         authInput.value = '';
         textInput.value = '';
@@ -385,7 +348,6 @@
 
         const verifiedKey = inputKey.toUpperCase();
 
-        // 1. First, download the single specific row to read the stored auth_code securely
         const { data, error } = await supabaseClient.from('transmissions').select('auth_code').eq('id', transmissionId).single();
         
         if (error || !data) {
@@ -393,9 +355,7 @@
             return;
         }
 
-        // 2. Validate Authorization
         if (verifiedKey === data.auth_code || verifiedKey === ADMIN_KEY) {
-            // Authorized -> Delete from cloud
             const { error: delError } = await supabaseClient.from('transmissions').delete().eq('id', transmissionId);
             
             if (delError) {
