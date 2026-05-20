@@ -98,12 +98,14 @@ permalink: /subspaceblog.html
 
         /* BLOG POST */
         .blog-post {
-            background-color: #0c0c12;
+            background-color: #000000 !important; /* Forza il nero puro per evitare contrasti con il blu-notte */
             border: 1px solid #333344;
             padding: 25px;
             margin-bottom: 35px;
             border-radius: 15px;
             max-width: 900px;
+            opacity: 1 !important;
+            filter: none !important;
         }
 
         .post-header {
@@ -118,19 +120,17 @@ permalink: /subspaceblog.html
         .post-title { color: #9999FF; font-size: 1.8rem; letter-spacing: 1px; margin: 0; }
         .post-date { color: #FFCC33; font-size: 1.1rem; font-weight: bold; }
 
-        .post-body { 
+        /* Questo blocco ora resetta e blinda TUTTO il testo del post, inclusi i paragrafi automatici di Jekyll */
+        .post-body, .post-body p { 
             color: #FF9900 !important; 
-            font-size: 1.15rem; 
-            line-height: 1.6; 
-            letter-spacing: 0.5px; 
-            text-transform: none !important; 
-            opacity: 1 !important;
+            font-size: 1.15rem !important; 
+            line-height: 1.6 !important; 
+            letter-spacing: 0.5px !important; 
+            text-transform: none !important; /* Spegne tassativamente il maiuscolo ereditato dal body */
+            opacity: 1 !important; /* Impedisce qualsiasi opacità cumulativa o sfumatura */
         }
         
         .post-body p { 
-            color: #FF9900 !important; 
-            opacity: 1 !important;
-            text-transform: none !important;
             margin-top: 0; 
             margin-bottom: 15px; 
         }
@@ -311,7 +311,7 @@ permalink: /subspaceblog.html
         const authInput = form.querySelector('.input-auth');
         const textInput = form.querySelector('.input-text');
         
-        const exactStardate = getFutureStardate();
+        const exact Stardate = getFutureStardate();
         const senderValue = senderInput.value.toUpperCase();
         const authValue = authInput.value.toUpperCase();
 
