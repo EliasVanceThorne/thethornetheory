@@ -118,8 +118,8 @@ permalink: /subspaceblog.html
         .post-title { color: #9999FF; font-size: 1.8rem; letter-spacing: 1px; margin: 0; }
         .post-date { color: #FFCC33; font-size: 1.1rem; font-weight: bold; }
 
-        .post-body { color: #FFCC33; font-size: 1.15rem; line-height: 1.6; letter-spacing: 0.5px; text-transform: none; }
-        .post-body p { margin-top: 0; margin-bottom: 15px; }
+        .post-body { color: #FF9900; font-size: 1.15rem; line-height: 1.6; letter-spacing: 0.5px; text-transform: none; }
+        .post-body p { color: inherit; margin-top: 0; margin-bottom: 15px; }
 
         /* COMMS SECTION */
         .comms-section { margin-top: 20px; }
@@ -253,7 +253,6 @@ permalink: /subspaceblog.html
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Carica e distribuisce tutte le trasmissioni da Supabase
         loadAllTransmissions();
     });
 
@@ -267,10 +266,8 @@ permalink: /subspaceblog.html
             return;
         }
 
-        // Resetta tutte le liste dei commenti per evitare duplicazioni grafiche
         document.querySelectorAll('.comments-list').forEach(list => list.innerHTML = '');
 
-        // Smista i commenti nei relativi box dei post corrispondenti
         if (data) {
             data.forEach(item => {
                 const targetList = document.getElementById(`list-${item.post_id}`);
