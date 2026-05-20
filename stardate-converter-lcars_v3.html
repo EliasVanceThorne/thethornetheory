@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCARS Stardate Converter v3.7</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
+        body {
+            background-color: black;
+            color: #FF9900;
+            font-family: 'Antonio', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* STRUTTURA FRAME LCARS LATERALE (IDENTICA ALLA INDEX) */
+        .lcars-left {
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            margin-top: 25px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .lcars-block {
+            height: 45px;
+            margin-bottom: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 45px;
+            padding-right: 15px;
+            text-align: right;
+            border-radius: 0 15px 15px 0;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        /* Effetto Hover LCARS coordinato */
+        .lcars-block.nav-link:hover {
+            filter: brightness(1.3);
+            padding-right: 25px;
+        }
+
+        .lcars-curve-joint {
+            background-color: #9999FF;
+            height: 60px;
+            border-radius: 0 70px 0 0;
+            margin-bottom: -15px;
+        }
+
+        /* Palette Colori Standard LCARS */
+        .color-1 { background-color: #FF9900; }
+        .color-2 { background-color: #CC99CC; }
+        .color-3 { background-color: #FFCC33; }
+        .color-4 { background-color: #9999FF; }
+        .color-5 { background-color: #FF6666; }
+
+        /* CONTENITORE PRINCIPALE (PANNELLO DI PLANCIA PC) */
+        .main-frame {
+            flex-grow: 1;
+            padding: 40px;
+            border-left: 20px solid #9999FF;
+            border-top: 45px solid #9999FF;
+            border-top-left-radius: 70px;
+            margin-top: 25px;
+            margin-right: 20px;
+            box-sizing: border-box;
+            padding-bottom: 60px;
+        }
+
+        .content {
+            margin-left: 15px;
+        }
+
+        /* TITOLI ED INTESTAZIONI */
+        h1 { font-size: 3.5rem; color: #9999FF; margin: 0; letter-spacing: 3px; line-height: 1.1; text-transform: uppercase; }
+        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 10px; text-transform: uppercase; }
+        .author-credits { color: #8888AA; font-size: 1rem; margin-bottom: 35px; line-height: 1.3; font-weight: bold; }
+
+        /* MODULI DI SEZIONE LCARS */
+        .module-box {
+            background-color: #0c0c12;
+            border: 1px solid #333344;
+            padding: 25px;
+            margin-bottom: 35px;
+            border-radius: 15px;
+            max-width: 950px;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            color: #9999FF;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #9999FF;
+            padding-bottom: 5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label { color: #CC99CC; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; }
+
+        input, select {
+            background-color: #111;
+            border: 2px solid #9999FF;
+            color: #FFFFFF;
+            padding: 10px;
+            font-family: 'Antonio', sans-serif;
+            font-size: 1.3rem;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            width: 80px;
+        }
+
+        select {
+            width: 140px;
+            text-transform: uppercase;
+        }
+        
+        input[type="text"] {
+            width: 180px;
+            text-transform: uppercase;
+        }
+
+        /* PULSANTI TATTICI */
+        button {
+            background-color: #FF9900;
+            color: black;
+            border: none;
+            padding: 11px 25px;
+            font-family: 'Antonio', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        button.btn-inv { background-color: #FFCC33; }
+        button:hover { filter: brightness(1.2); }
+
+        /* AREA DI OUTPUT RISULTATI */
+        .value-res { 
+            font-size: 1.4rem; 
+            color: white; 
+            line-height: 1.5;
+            margin-top: 15px;
+            background: #050507;
+            padding: 15px;
+            border-left: 5px solid #555566; /* Colore neutro iniziale di attesa */
+            border-radius: 0 10px 10px 0;
+            box-sizing: border-box;
+        }
+
+        .value-res.active-tos {
+            border-left-color: #FF9900;
+        }
+
+        .value-res.active-tng {
+            border-left-color: #00FFCC;
+        }
+
+        .value-res.inverse-active {
+            border-left-color: #FFCC33;
+        }
+
+        .stardate-highlight {
+            font-size: 2.6rem;
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* PIÈ DI PAGINA INTERFACCIA */
+        .footer {
+            margin-top: 40px;
+            color: #444;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-top: 1px solid #222;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- BLOCCO DI NAVIGAZIONE LCARS CORRETTO -->
+<div class="lcars-left">
+    <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
+    <a href="index.html" class="lcars-block color-2 nav-link">ARCHIVE</a>
+    <a href="subspaceblog.html" class="lcars-block color-3 nav-link">SUBSPACE</a>
+    <a href="index.html" class="lcars-block color-4 nav-link">COMMS</a>
+    <a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
+    <a href="seccodgen.html" class="lcars-block color-5 nav-link">SEC_902</a>
+    <div class="lcars-curve-joint"></div>
+</div>
+
+<div class="main-frame">
+    <div class="content">
+        <div class="sub-title">LCARS TEMPORAL SCIENCES DIVISION • SYSTEMS CONFIGURATION</div>
+        <h1>STARDATE CONVERTER</h1>
+        <div class="author-credits">
+            DEVELOPED BY: DR. ELIAS V. THORNE<br>
+            COMMANDING OFFICER // U.S.S. ULYSSES (NCC-1567)
+        </div>
+
+        <div class="module-box">
+            <div class="section-title">1. TOS CONVERTER (23rd Century Era)</div>
+            <div class="input-row">
+                <div class="input-field">
+                    <label>Day</label>
+                    <input type="number" id="tosDay" value="21" min="1" max="31">
+                </div>
+                <div class="input-field">
+                    <label>Month</label>
+                    <select id="tosMonth">
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4" selected>April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label>Year</label>
+                    <input type="number" id="tosYear" value="2266" style="width:100px;">
+                </div>
+                <div class="input-field">
+                    <label>Hour</label>
+                    <input type="number" id="tosHour" value="12" min="0" max="23">
+                </div>
+                <div class="input-field">
+                    <label>Minute</label>
+                    <input type="number" id="tosMinute" value="0" min="0" max="59">
+                </div>
+                <button id="btnConvertTOS">Convert to TOS Stardate</button>
+            </div>
+            <div class="value-res" id="tosResult">LCARS CORE: Awaiting chronological matrix parameters...</div>
+        </div>
+
+        <div class="module-box">
+            <div class="section-title">2. TNG / STO CONVERTER (24th–25th Century Era)</div>
+            <div class="input-row">
+                <div class="input-field">
+                    <label>Day</label>
+                    <input type="number" id="tngDay" value="21" min="1" max="31">
+                </div>
+                <div class="input-field">
+                    <label>Month</label>
+                    <select id="tngMonth">
+                        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+                        <option value="4" selected>April</option><option value="5">May</option><option value="6">June</option>
+                        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+                        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label>Year</label>
+                    <input type="number" id="tngYear" value="2412" style="width:100px;">
+                </div>
+                <div class="input-field">
+                    <label>Hour</label>
+                    <input type="number" id="tngHour" value="12" min="0" max="23">
+                </div>
+                <div class="input-field">
+                    <label>Minute</label>
+                    <input type="number" id="tngMinute" value="0" min="0" max="59">
+                </div>
+                <button id="btnConvertTNG">Convert to TNG/STO Stardate</button>
+            </div>
+            <div class="value-res" id="tngResult">LCARS CORE: Awaiting chronological matrix parameters...</div>
+        </div>
+
+        <div class="module-box">
+            <div class="section-title">3. INVERSE CHRONO-MATRIX CONVERTER (Stardate ➔ Real Date)</div>
+            
+            <div class="input-row">
+                <div class="input-field">
+                    <label>TOS Stardate Input</label>
+                    <input type="text" id="invTOS" placeholder="e.g. 6147.4">
+                </div>
+                <button class="btn-inv" id="btnInverseTOS">Convert TOS Matrix</button>
+            </div>
+
+            <div class="input-row" style="margin-top: 25px;">
+                <div class="input-field">
+                    <label>TNG/STO Stardate Input</label>
+                    <input type="text" id="invTNG" placeholder="e.g. 86050.9">
+                </div>
+                <button class="btn-inv" id="btnInverseTNG">Convert TNG/STO Matrix</button>
+            </div>
+
+            <div class="value-res" id="inverseResult">LCARS CORE: Awaiting stardate vector for matrix decryption...</div>
+        </div>
+
+        <div class="footer">
+            LCARS CHRONO-CONVERTER CORE v3.7 // TEMPORAL MECHANICS OVERRIDE // TRASMISSION ENCRYPTED 
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('btnConvertTOS').addEventListener('click', convertTOS);
+        document.getElementById('btnConvertTNG').addEventListener('click', convertTNG);
+        document.getElementById('btnInverseTOS').addEventListener('click', inverseTOS);
+        document.getElementById('btnInverseTNG').addEventListener('click', inverseTNG);
+
+        const now = new Date();
+        
+        document.getElementById('tosDay').value = now.getDate();
+        document.getElementById('tosMonth').value = now.getMonth() + 1;
+        document.getElementById('tosHour').value = now.getHours();
+        document.getElementById('tosMinute').value = now.getMinutes();
+
+        document.getElementById('tngDay').value = now.getDate();
+        document.getElementById('tngMonth').value = now.getMonth() + 1;
+        document.getElementById('tngHour').value = now.getHours();
+        document.getElementById('tngMinute').value = now.getMinutes();
+    });
+
+    function convertTOS() {
+        const day = parseInt(document.getElementById('tosDay').value);
+        const month = parseInt(document.getElementById('tosMonth').value);
+        const year = parseInt(document.getElementById('tosYear').value);
+        const hour = parseInt(document.getElementById('tosHour').value);
+        const minute = parseInt(document.getElementById('tosMinute').value);
+
+        const date = new Date(year, month-1, day, hour, minute);
+        const utcMs = date.getTime();
+
+        const tosEpoch = new Date(2266, 0, 1).getTime();
+        const days = (utcMs - tosEpoch) / 86400000;
+        const sd = 1000 + (days / 365.2422 * 1000);
+
+        const container = document.getElementById('tosResult');
+        container.classList.add('active-tos');
+        container.innerHTML = `
+            <strong>COMPUTED TOS STARDATE:</strong> 
+            <span class="stardate-highlight" style="color:#FFFF00;">${sd.toFixed(1)}</span>
+            <span style="font-size:0.9rem; opacity:0.7; display:block; margin-top:5px;">23rd Century • Original Series Timeline Tracking</span>
+        `;
+    }
+
+    function convertTNG() {
+        const day = parseInt(document.getElementById('tngDay').value);
+        const month = parseInt(document.getElementById('tngMonth').value);
+        const year = parseInt(document.getElementById('tngYear').value);
+        const hour = parseInt(document.getElementById('tngHour').value);
+        const minute = parseInt(document.getElementById('tngMinute').value);
+
+        const date = new Date(year, month-1, day, hour, minute);
+        const utcMs = date.getTime();
+
+        const tngEpoch = new Date(2364, 0, 1).getTime();
+        const days = (utcMs - tngEpoch) / 86400000;
+        const sd = days / 365.2422 * 1000;
+
+        const container = document.getElementById('tngResult');
+        container.classList.add('active-tng');
+        container.innerHTML = `
+            <strong>COMPUTED TNG/STO STARDATE:</strong> 
+            <span class="stardate-highlight" style="color:#00FFCC;">${sd.toFixed(1)}</span>
+            <span style="font-size:0.9rem; opacity:0.7; display:block; margin-top:5px;">24th–25th Century • Post-Farpoint Federation Standard</span>
+        `;
+    }
+
+    function inverseTOS() {
+        let sd = parseFloat(document.getElementById('invTOS').value);
+        if (isNaN(sd)) return alert("CRITICAL ERROR: Input a valid numeric vector for TOS Stardate.");
+        const tosEpoch = new Date(2266, 0, 1).getTime();
+        const days = (sd - 1000) * 365.2422 / 1000;
+        const d = new Date(tosEpoch + days * 86400000);
+        showInverseResult(d, "TOS (23rd Century Protocol)");
+    }
+
+    function inverseTNG() {
+        let sd = parseFloat(document.getElementById('invTNG').value);
+        if (isNaN(sd)) return alert("CRITICAL ERROR: Input a valid numeric vector for TNG/STO Stardate.");
+        const tngEpoch = new Date(2364, 0, 1).getTime();
+        const days = sd * 365.2422 / 1000;
+        const d = new Date(tngEpoch + days * 86400000);
+        showInverseResult(d, "TNG/STO (24th–25th Century Protocol)");
+    }
+
+    function showInverseResult(d, mode) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+        const container = document.getElementById('inverseResult');
+        container.classList.add('inverse-active');
+        container.innerHTML = `
+            <strong>DECRYPTED CHRONOLOGICAL MATRIX CORRESPONDENCE:</strong><br>
+            <span style="font-size: 1.6rem; color: #FFCC33; display:block; margin-top:8px;">${d.toLocaleString('en-US', options)}</span>
+            <span style="font-size:0.9rem; opacity:0.6; display:block; margin-top:5px;">Source Metric Base: ${mode}</span>
+        `;
+    }
+</script>
+
+</body>
+</html>

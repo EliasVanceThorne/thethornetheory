@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starfleet Central Command Terminal</title>
+    
+    <!-- DA QUI INIZIA LA ZONA CSS (I COMANDI GRAFICI) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
+        body {
+            background-color: black;
+            color: #FF9900;
+            font-family: 'Antonio', sans-serif;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* STRUTTURA FRAME LCARS LATERALE */
+        .lcars-left {
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            margin-top: 25px;
+            flex-shrink: 0;
+        }
+
+        .lcars-block {
+            height: 45px;
+            margin-bottom: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 45px;
+            padding-right: 15px;
+            text-align: right;
+            border-radius: 0 15px 15px 0;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .lcars-block.nav-link:hover {
+            filter: brightness(1.3);
+            padding-right: 25px;
+        }
+
+        .lcars-curve-joint {
+            background-color: #9999FF;
+            height: 60px;
+            border-radius: 0 70px 0 0;
+            margin-bottom: -15px;
+        }
+
+        /* Palette Colori Standard LCARS */
+        .color-1 { background-color: #FF9900; }
+        .color-2 { background-color: #CC99CC; }
+        .color-3 { background-color: #FFCC33; }
+        .color-4 { background-color: #9999FF; }
+        .color-5 { background-color: #FF6666; }
+
+        /* CONTENITORE PRINCIPALE COORDINATO */
+        .main-frame {
+            flex-grow: 1;
+            padding: 40px;
+            border-left: 20px solid #9999FF;
+            border-top: 45px solid #9999FF;
+            border-top-left-radius: 70px;
+            margin-top: 25px;
+            margin-right: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-scroll {
+            flex-grow: 1;
+            margin-left: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 { font-size: 3.5rem; color: #9999FF; margin: 0; letter-spacing: 3px; line-height: 1; }
+        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 20px; }
+
+        .welcome-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* QUESTO È IL COMANDO CSS PER IL TUO LOGO PROTETTO */
+        .logo-protetto {
+            width: 350px;          /* Larghezza del riquadro */
+            height: 350px;         /* Altezza del riquadro */
+            margin-bottom: 30px;
+            
+            /* Diciamo al CSS di iniettare l'immagine come sfondo invisibile */
+            background-image: url('logo.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .access-granted {
+            color: #00FFCC; 
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+
+        .instruction-text {
+            color: #FFCC33;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            max-width: 500px;
+            line-height: 1.4;
+        }
+
+        .footer { 
+            margin-top: 40px; 
+            color: #444; 
+            font-size: 0.9rem; 
+            letter-spacing: 1px;
+            border-top: 1px solid #222;
+            padding-top: 10px;
+        }
+    </style>
+    <!-- QUI FINISCE LA ZONA CSS (CHIUSURA DI STYLE) -->
+    
+</head>
+<body>
+
+<!-- NAVIGAZIONE LATERALE LCARS (Sincronizzata con seccodgen) -->
+<div class="lcars-left">
+    <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
+    <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
+    <a href="subspaceblog.html" class="lcars-block color-3 nav-link">SUBSPACE</a>
+    <a href="#comms" class="lcars-block color-4 nav-link">COMMS</a>
+    <a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
+    <a href="seccodgen.html" class="lcars-block color-5 nav-link">SEC_902</a>
+    <div class="lcars-curve-joint"></div>
+</div>
+
+<div class="main-frame">
+    <div class="content-scroll">
+        <h1>MAIN TERMINAL</h1>
+        <div class="sub-title">STARFLEET COMMAND DATA NETWORK // ACCESS POINT 01</div>
+
+        <div class="welcome-container">
+            
+            <!-- SCHELETRO HTML: Crea il riquadro e blocca il tasto destro del mouse -->
+            <div class="logo-protetto" oncontextmenu="return false;"></div>
+
+            <p class="access-granted">✓ ACCESS GRANTED</p>
+            
+            <p class="instruction-text">
+                Please select the desired function from the left menu
+            </p>
+            
+        </div>
+
+        <div class="footer">
+            LCARS INTERFACE 3.6B | SYSTEM STATUS: ONLINE | SECURE CONNECTION ESTABLISHED
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

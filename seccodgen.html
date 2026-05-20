@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starfleet Subspace Security Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
+        body {
+            background-color: black;
+            color: #FF9900;
+            font-family: 'Antonio', sans-serif;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* STRUTTURA FRAME LCARS LATERALE (IDENTICA ALLA INDEX) */
+        .lcars-left {
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            margin-top: 25px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .lcars-block {
+            height: 45px;
+            margin-bottom: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 45px;
+            padding-right: 15px;
+            text-align: right;
+            border-radius: 0 15px 15px 0;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        /* Effetto Hover LCARS coordinato */
+        .lcars-block.nav-link:hover {
+            filter: brightness(1.3);
+            padding-right: 25px;
+        }
+
+        .lcars-curve-joint {
+            background-color: #9999FF;
+            height: 60px;
+            border-radius: 0 70px 0 0;
+            margin-bottom: -15px;
+        }
+
+        /* Palette Colori Standard LCARS */
+        .color-1 { background-color: #FF9900; }
+        .color-2 { background-color: #CC99CC; }
+        .color-3 { background-color: #FFCC33; }
+        .color-4 { background-color: #9999FF; }
+        .color-5 { background-color: #FF6666; }
+
+        /* CONTENITORE PRINCIPALE (PANNELLO DI PLANCIA COORDINATO) */
+        .main-frame {
+            flex-grow: 1;
+            padding: 40px;
+            border-left: 20px solid #9999FF;
+            border-top: 45px solid #9999FF;
+            border-top-left-radius: 70px;
+            margin-top: 25px;
+            margin-right: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-scroll {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        /* TITOLI ED INTESTAZIONI */
+        h1 { font-size: 3.5rem; color: #9999FF; margin: 0; letter-spacing: 3px; line-height: 1; }
+        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 40px; }
+
+        /* SECURITY INTERFACE PANEL MODULARE */
+        .main-panel {
+            background-color: #0c0c12;
+            border: 1px solid #333344;
+            padding: 35px;
+            border-radius: 15px;
+            max-width: 900px;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin: 20px 0 8px;
+            font-size: 1.2rem;
+            color: #FFCC33;
+            letter-spacing: 1px;
+        }
+
+        /* LCARS Form Elements */
+        .lcars-input {
+            width: 100%;
+            padding: 14px;
+            background-color: #111;
+            border: 1px solid #444;
+            color: #FF9900;
+            font-family: 'Antonio', sans-serif;
+            font-size: 1.3rem;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .lcars-input:focus {
+            outline: none;
+            border-color: #FF9900;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        .checkbox-group input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #FF9900;
+        }
+
+        /* Interface Action Trigger */
+        .btn-lcars-action {
+            width: 100%;
+            background-color: #FF9900;
+            color: black;
+            border: none;
+            font-family: 'Antonio', sans-serif;
+            font-weight: bold;
+            font-size: 1.3rem;
+            padding: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-lcars-action:hover {
+            background-color: #FFCC33;
+        }
+
+        /* Matrix Output Screen */
+        .code-output {
+            background-color: #050508;
+            border-left: 8px solid #FFCC33;
+            padding: 22px;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            word-break: break-word;
+            border-radius: 0 8px 8px 0;
+            margin: 30px 0;
+            color: #FFFFFF;
+        }
+
+        .small-note {
+            font-size: 0.95rem;
+            color: #CC99CC;
+            line-height: 1.4;
+            text-transform: none;
+            opacity: 0.85;
+            border-top: 1px dashed #333344;
+            padding-top: 15px;
+        }
+
+        .footer { 
+            margin-top: 40px; 
+            color: #444; 
+            font-size: 0.9rem; 
+            letter-spacing: 1px;
+            border-top: 1px solid #222;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGAZIONE LATERALE LCARS (Sincronizzata con seccodgen) -->
+<div class="lcars-left">
+    <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
+    <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
+    <a href="subspaceblog.html" class="lcars-block color-3 nav-link">SUBSPACE</a>
+    <a href="#comms" class="lcars-block color-4 nav-link">COMMS</a>
+    <a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
+    <a href="seccodgen.html" class="lcars-block color-5 nav-link">SEC_902</a>
+    <div class="lcars-curve-joint"></div>
+</div>
+
+<div class="main-frame">
+    <div class="content-scroll">
+        <h1>SECURITY TERMINAL</h1>
+        <div class="sub-title">SUBSPACE CODES // STARFLEET AUTHORIZATION MATRIX</div>
+
+        <div class="main-panel">
+            <label>👤 OFFICER IDENTIFICATION (LAST NAME)</label>
+            <input type="text" id="officerName" class="lcars-input" placeholder="ENTER OFFICER NAME..." value="">
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="noRepeat" checked>
+                <label for="noRepeat" style="margin:0; font-size: 1rem; color: #CC99CC;">ENABLE ANTI-REPETITION PROTOCOL (CURRENT SESSION)</label>
+            </div>
+
+            <button id="generateBtn" class="btn-lcars-action">🔐 GENERATE SECURITY CODE</button>
+
+            <div class="code-output" id="codeDisplay">
+                — — —
+            </div>
+            
+            <div class="small-note">
+                Algorithmic generation compliant with Starfleet Command security protocols.<br>
+                Encrypted syntax: "Officer, Greek_Word-Greek_Word-X-X-Suffix".
+            </div>
+        </div>
+
+        <div class="footer">
+            LCARS INTERFACE 3.6B | SECURITY PROTOCOL OVERRIDE | STARFLEET COMMAND DATA MATRIX
+        </div>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // Starfleet Official Terminology (TNG Era)
+    // --------------------------------------------------------------
+    const GREEK_WORDS = [
+        "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta",
+        "Theta", "Iota", "Kappa", "Lambda", "My", "Ny", "Xi",
+        "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon",
+        "Phi", "Chi", "Psi", "Omega"
+    ];
+
+    const SUFFIXES = ["Alpha", "Beta", "Gamma", "Delta", "Omega", "Zero", "One", "Seven", "Nine"];
+
+    // Code tracking memory per user session
+    let usedCodesMap = new Map();
+
+    function generateRandomCodePart() {
+        let idx1 = Math.floor(Math.random() * GREEK_WORDS.length);
+        let g1 = GREEK_WORDS[idx1];
+        let g2;
+        do {
+            let idx2 = Math.floor(Math.random() * GREEK_WORDS.length);
+            g2 = GREEK_WORDS[idx2];
+        } while (g2 === g1);
+
+        let n1 = Math.floor(Math.random() * 10);
+        let n2 = Math.floor(Math.random() * 10);
+        let suffix = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)];
+
+        return `${g1}-${g2}-${n1}-${n2}-${suffix}`;
+    }
+
+    function generateFullCode(officerName, avoidRepeat, usedSet) {
+        if (!officerName || officerName.trim() === "") {
+            officerName = "OFFICER";
+        }
+        const cleanName = officerName.trim();
+        let codePart;
+        let attempts = 0;
+        const maxAttempts = 2000;
+
+        do {
+            codePart = generateRandomCodePart();
+            attempts++;
+            if (attempts > maxAttempts) {
+                console.warn("Unable to find unique code sequence after multiple attempts.");
+                break;
+            }
+        } while (avoidRepeat && usedSet && usedSet.has(codePart));
+
+        if (avoidRepeat && usedSet) {
+            usedSet.add(codePart);
+        }
+        return `${cleanName}, ${codePart}`;
+    }
+
+    function generateAndDisplay() {
+        const nameInput = document.getElementById("officerName");
+        const rawName = nameInput.value;
+        const avoidRepeat = document.getElementById("noRepeat").checked;
+        const normalizedName = rawName.trim().toUpperCase();
+
+        let usedSet = null;
+        if (avoidRepeat) {
+            if (!usedCodesMap.has(normalizedName)) {
+                usedCodesMap.set(normalizedName, new Set());
+            }
+            usedSet = usedCodesMap.get(normalizedName);
+        }
+
+        const fullCode = generateFullCode(rawName.trim(), avoidRepeat, usedSet);
+        document.getElementById("codeDisplay").innerText = fullCode;
+    }
+
+    // LCARS Core Event Binding
+    document.getElementById("generateBtn").addEventListener("click", generateAndDisplay);
+    window.addEventListener("load", () => {
+        generateAndDisplay();
+    });
+</script>
+</body>
+</html>
