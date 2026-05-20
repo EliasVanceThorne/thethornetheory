@@ -89,6 +89,17 @@
         h1 { font-size: 3.5rem; color: #9999FF; margin: 0; letter-spacing: 3px; line-height: 1; }
         .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 20px; }
 
+        /* STILE PER LA SEQUENZA DI ACCESSO "THE THORNE THEORY" */
+        .console-log {
+            font-size: 1rem;
+            color: #CC99CC;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #222233;
+            padding-bottom: 15px;
+        }
+
         .welcome-container {
             flex-grow: 1;
             display: flex;
@@ -146,7 +157,7 @@
 </head>
 <body>
 
-<!-- NAVIGAZIONE LATERALE LCARS (Sincronizzata con seccodgen) -->
+<!-- NAVIGAZIONE LATERALE LCARS -->
 <div class="lcars-left">
     <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
     <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
@@ -161,6 +172,15 @@
     <div class="content-scroll">
         <h1>MAIN TERMINAL</h1>
         <div class="sub-title">STARFLEET COMMAND DATA NETWORK // ACCESS POINT 01</div>
+
+        <!-- NUOVA SEQUENZA DI INIZIALIZZAZIONE LOG DEL TERMINALE -->
+        <div class="console-log">
+            <span style="color: #9999FF;">[LINK]</span> SUBSPACE CONNECTION ESTABLISHED VIA DEEP SPACE 9 // UPLINK SECURE<br>
+            <span style="color: #FFCC33;">[AUTH]</span> BYPASSING DIRECTORY RESTRICTIONS... ACCESS GRANTED BY OMEGA CODE<br>
+            <span style="color: #FF9900;">[DECRYPT]</span> DECRYPTING PROTECTED DATA MATRIX [SIGMA-992-THORNE]<br>
+            <span style="color: #00FFCC;">[BRIDGE]</span> ESTABLISHING QUANTUM LINK TO CORE ARCHIVE... CONNECTION SUCCESSFUL<br>
+            <span style="color: #FF6666; font-weight: bold;">[RUN]</span> INITIALIZING HIGH-SECURITY MATRIX CONSOLE: <span style="color: #FFFFFF; font-weight: bold; text-shadow: 0 0 5px rgba(255,153,0,0.5);">"THE THORNE THEORY"</span> // VERSION 4.1.0-BETA
+        </div>
 
         <div class="welcome-container">
             
