@@ -53,7 +53,7 @@ permalink: /comms.html
         }
 
         .lcars-curve-joint {
-            background-color: #9999FF;
+            background-color: #CC99CC;
             height: 60px;
             border-radius: 0 70px 0 0;
             margin-bottom: -15px;
@@ -70,7 +70,7 @@ permalink: /comms.html
         .main-frame {
             flex-grow: 1;
             padding: 40px;
-            border-left: 20px solid #CC99CC; /* Colore Comms dedicato */
+            border-left: 20px solid #CC99CC;
             border-top: 45px solid #CC99CC;
             border-top-left-radius: 70px;
             margin-top: 25px;
@@ -85,9 +85,19 @@ permalink: /comms.html
         h1 { font-size: 3.5rem; color: #CC99CC; margin: 0; letter-spacing: 3px; line-height: 1; }
         .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 25px; }
 
+        /* INTERFACCIA A DUE COLONNE (CHAT + UTENTI) */
+        .comms-wrapper {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+            margin-bottom: 20px;
+            max-width: 1200px;
+        }
+
         /* CHAT CONTAINER */
         .chat-container {
-            flex-grow: 1;
+            flex-grow: 3;
             background-color: #0c0c12;
             border: 1px solid #333344;
             border-radius: 15px;
@@ -95,8 +105,6 @@ permalink: /comms.html
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            margin-bottom: 20px;
-            max-width: 1000px;
         }
 
         .chat-messages {
@@ -108,19 +116,56 @@ permalink: /comms.html
             gap: 12px;
         }
 
-        .chat-messages::-webkit-scrollbar { width: 8px; }
-        .chat-messages::-webkit-scrollbar-track { background: #000; }
-        .chat-messages::-webkit-scrollbar-thumb { background: #CC99CC; border-radius: 4px; }
+        .chat-messages::-webkit-scrollbar, .users-list::-webkit-scrollbar { width: 8px; }
+        .chat-messages::-webkit-scrollbar-track, .users-list::-webkit-scrollbar-track { background: #000; }
+        .chat-messages::-webkit-scrollbar-thumb, .users-list::-webkit-scrollbar-thumb { background: #CC99CC; border-radius: 4px; }
 
-        /* CHAT MESSAGE ITEM */
+        /* PANNELLO UTENTI CONNESSI */
+        .online-panel {
+            flex-grow: 1;
+            width: 220px;
+            background-color: #0c0c12;
+            border: 1px solid #333344;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .online-panel h3 {
+            color: #CC99CC;
+            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #333344;
+            padding-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .users-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .user-badge {
+            background-color: #050508;
+            border-left: 3px solid #00FFCC;
+            padding: 6px 12px;
+            font-size: 1rem;
+            color: #00FFCC;
+            border-radius: 0 4px 4px 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* CHAT MESSAGE ITEM (RIMOSSO BOTTONE DELETE) */
         .msg-item {
             background-color: #050508;
             border-left: 5px solid #FF9900;
             padding: 10px 15px;
             border-radius: 0 8px 8px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .msg-content { flex-grow: 1; }
@@ -134,25 +179,8 @@ permalink: /comms.html
         }
         .msg-text { color: #DDDDDD; font-size: 1.1rem; text-transform: none; letter-spacing: 0.5px; }
 
-        /* BUTTON ABORT/DELETE */
-        .btn-abort {
-            background-color: #FF6666;
-            color: black;
-            border: none;
-            font-family: 'Antonio', sans-serif;
-            font-weight: bold;
-            font-size: 0.85rem;
-            padding: 4px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-left: 15px;
-            transition: 0.2s;
-            text-transform: uppercase;
-        }
-        .btn-abort:hover { filter: brightness(1.2); background-color: #FF9900; }
-
         /* CHAT INPUT FORM */
-        .chat-form { max-width: 1000px; }
+        .chat-form { max-width: 1200px; }
         .form-row { display: flex; gap: 10px; }
         
         .chat-form input, .chat-form textarea {
@@ -190,13 +218,21 @@ permalink: /comms.html
     <h1>SUBSPACE COMMS TERMINAL</h1>
     <div class="sub-title">CHANNEL // GLOBAL_COMMS_MATRIX // REALTIME LINK</div>
 
-    <div class="chat-container">
-        <div class="chat-messages" id="chatMatrix"></div>
+    <div class="comms-wrapper">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMatrix"></div>
+        </div>
+
+        <div class="online-panel">
+            <h3>ONLINE OFFICERS</h3>
+            <div class="users-list" id="usersList">
+                </div>
+        </div>
     </div>
 
     <form class="chat-form" onsubmit="transmitGlobalMessage(event, this)">
         <div class="form-row">
-            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId">
+            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId" onchange="updatePresence()">
             <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode">
             <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText" onkeydown="handleChatSubmit(event)"></textarea>
             <button type="submit" class="btn-send">TRANSMIT</button>
@@ -204,20 +240,20 @@ permalink: /comms.html
     </form>
 
     <div class="footer">
-        LCARS COMMS FREQUENCY ACTIVE | FREQ: 42.1 GHz | SECURE TRANSFERS ONLY
+        LCARS COMMS FREQUENCY ACTIVE | FREQ: 42.1 GHz | AUTOMATIC 24HR PURGE PROTOCOL ONLINE
     </div>
 </div>
 
 <script>
-    // --- LCARS PROTOCOL INITIALIZATION ---
     const SUPABASE_URL = "https://dvjtdszdzcdatqextzrz.supabase.co";
     const SUPABASE_KEY = "sb_publishable_y2ndok49LIbaDl7C89aiGg_lABxwt_u";
     
     const ADMIN_SENDER = "ADMIN";
     const ADMIN_KEY = "SIGMA-THETA-9-7-ALPHA"; 
-    const GLOBAL_POST_ID = "GLOBAL_COMMS"; // Identificativo unico per la chat globale
+    const GLOBAL_POST_ID = "GLOBAL_COMMS";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let presenceChannel = null;
 
     function convertTNG(day, month, year, hour, minute) {
         const futureYear = year + 386;
@@ -234,21 +270,18 @@ permalink: /comms.html
         return convertTNG(now.getDate(), now.getMonth() + 1, now.getFullYear(), now.getHours(), now.getMinutes());
     }
 
-    // Intercettore del tasto invio nella casella di testo
     function handleChatSubmit(event) {
         if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault(); // Impedisce la creazione di una nuova riga vuota
+            event.preventDefault();
             const form = event.target.closest('form');
-            if (form) {
-                form.requestSubmit(); // Sottomette il form simulando la pressione del tasto TRANSMIT
-            }
+            if (form) form.requestSubmit();
         }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
         loadGlobalChat();
         
-        // Attiviamo il Realtime ascoltando i nuovi inserimenti sulla tabella 'transmissions'
+        // 1. Canale Realtime per i messaggi della chat
         supabaseClient
             .channel('public:transmissions')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transmissions' }, payload => {
@@ -256,11 +289,69 @@ permalink: /comms.html
                     appendMessage(payload.new);
                 }
             })
-            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transmissions' }, payload => {
-                loadGlobalChat(); // Ricarica la chat se un messaggio viene cancellato
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transmissions' }, () => {
+                loadGlobalChat(); // Se il trigger elimina roba vecchia di 24h, aggiorna la vista
             })
             .subscribe();
+
+        // 2. Inizializza il canale di presenza globale
+        setupPresence();
     });
+
+    // --- TRACKING PRESENZA UTENTI ONLINE ---
+    function setupPresence() {
+        presenceChannel = supabaseClient.channel('online-users', {
+            config: { presence: { key: 'user' } }
+        });
+
+        presenceChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = presenceChannel.presenceState();
+                renderOnlineUsers(state);
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    updatePresence();
+                }
+            });
+    }
+
+    function updatePresence() {
+        const senderInput = document.getElementById('senderId');
+        // Se l'utente non ha ancora inserito un ID, lo tracciamo come "UNKNOWN_TERMINAL"
+        const currentUserId = senderInput.value.trim().toUpperCase() || "UNKNOWN_TERMINAL";
+        
+        if (presenceChannel) {
+            presenceChannel.track({
+                username: currentUserId,
+                online_at: new Date().toISOString()
+            });
+        }
+    }
+
+    function renderOnlineUsers(state) {
+        const usersListDiv = document.getElementById('usersList');
+        usersListDiv.innerHTML = '';
+        
+        const uniqueUsernames = new Set();
+
+        // Estrae i nomi degli utenti attivi dal dizionario di presenza di Supabase
+        Object.values(state).forEach(presencePresences => {
+            presencePresences.forEach(p => {
+                if(p.username && p.username !== "UNKNOWN_TERMINAL") {
+                    uniqueUsernames.add(p.username);
+                }
+            });
+        });
+
+        // Genera i badge grafici LCARS per gli utenti connessi
+        uniqueUsernames.forEach(username => {
+            const badge = document.createElement('div');
+            badge.className = 'user-badge';
+            badge.innerText = `• ${username}`;
+            usersListDiv.appendChild(badge);
+        });
+    }
 
     // --- CHAT CORE FUNCTIONS ---
 
@@ -272,7 +363,7 @@ permalink: /comms.html
             .order('id', { ascending: true });
         
         if (error) {
-            console.error("Subspace interference detected:", error);
+            console.error("Subspace interference:", error);
             return;
         }
 
@@ -287,8 +378,6 @@ permalink: /comms.html
 
     function appendMessage(item, triggerScroll = true) {
         const chatMatrix = document.getElementById('chatMatrix');
-        
-        // Evitiamo duplicati visivi se il realtime ricarica ciò che è già presente
         if (document.querySelector(`[data-id="${item.id}"]`)) return;
 
         const msgNode = document.createElement('div');
@@ -302,13 +391,10 @@ permalink: /comms.html
                 </div>
                 <div class="msg-text">${item.message}</div>
             </div>
-            <button class="btn-abort" onclick="abortGlobalTransmission(this)">DELETE</button>
-        `;
+        `; // <--- Rimosso completamente il bottone DELETE
         chatMatrix.appendChild(msgNode);
         
-        if (triggerScroll) {
-            scrollToBottom();
-        }
+        if (triggerScroll) scrollToBottom();
     }
 
     async function transmitGlobalMessage(event, form) {
@@ -319,58 +405,49 @@ permalink: /comms.html
         const textInput = document.getElementById('msgText');
         
         const exactStardate = getFutureStardate();
-        const senderValue = senderInput.value.toUpperCase();
-        const authValue = authInput.value.toUpperCase();
+        const senderValue = senderInput.value.trim().toUpperCase();
+        const authValue = authInput.value.trim().toUpperCase();
 
         if (senderValue === ADMIN_SENDER && authValue !== ADMIN_KEY) {
             alert("ACCESS DENIED: INVALID STARFLEET COMMAND CREDENTIALS.");
             return;
         }
 
+        // --- VERIFICA ID UNIVOCO ---
+        // Controlla se l'ID esiste già nel database globale
+        const { data: existingUser, error: checkError } = await supabaseClient
+            .from('transmissions')
+            .select('auth_code')
+            .eq('sender', senderValue)
+            .limit(1);
+
+        if (!checkError && existingUser && existingUser.length > 0) {
+            // Se l'ID esiste, verifichiamo se il codice inserito corrisponde a quello memorizzato
+            if (existingUser[0].auth_code !== authValue) {
+                alert(`TRANSMISSION DENIED: SENDER ID "${senderValue}" IS RESERVED. INVALID AUTH CODE.`);
+                return;
+            }
+        }
+
+        // Se il controllo passa, inserisce il messaggio
         const { error } = await supabaseClient.from('transmissions').insert([
             { 
                 sender: senderValue, 
                 auth_code: authValue, 
                 message: textInput.value, 
                 stardate: exactStardate,
-                post_id: GLOBAL_POST_ID // Canale globale della chat
+                post_id: GLOBAL_POST_ID
             }
         ]);
 
         if (error) {
-            alert("TRANSMISSION FAILED: SUBSPACE LINK OFFLINE.");
+            alert("TRANSMISSION FAILED: INTERFERENCE DETECTED OR UNEXPECTED DATABASE ERROR.");
             console.error(error);
             return;
         }
 
-        textInput.value = ''; // Pulisce solo l'input del testo. ID e AUTH rimangono inseriti per i prossimi messaggi.
-        // Nota: non serve richiamare loadGlobalChat() qui, ci pensa il Realtime automatico!
-    }
-
-    async function abortGlobalTransmission(button) {
-        const msgItem = button.closest('.msg-item');
-        const transmissionId = msgItem.getAttribute('data-id');
-        
-        const inputKey = prompt("ENTER TRANSMISSION AUTH CODE OR MASTER COMMAND KEY TO ABORT:");
-        if (inputKey === null) return; 
-
-        const verifiedKey = inputKey.toUpperCase();
-
-        const { data, error } = await supabaseClient.from('transmissions').select('auth_code').eq('id', transmissionId).single();
-        
-        if (error || !data) {
-            alert("ERROR: TRANSMISSION UNRESOLVED IN CENTRAL MATRIX.");
-            return;
-        }
-
-        if (verifiedKey === data.auth_code || verifiedKey === ADMIN_KEY) {
-            const { error: delError } = await supabaseClient.from('transmissions').delete().eq('id', transmissionId);
-            if (delError) {
-                alert("DELETION PROTOCOL FAILED.");
-            }
-        } else {
-            alert("TERMINAL OVERRIDE FAILED: ILLEGAL ACCESS CODE.");
-        }
+        textInput.value = '';
+        updatePresence(); // Sincronizza il nome definitivo nella colonna online
     }
 
     function scrollToBottom() {
