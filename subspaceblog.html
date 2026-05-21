@@ -211,7 +211,7 @@ permalink: /subspaceblog.html
     <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
     <a href="subspaceblog.html" class="lcars-block color-3 nav-link">SUBSPACE</a>
     <a href="comms.html" class="lcars-block color-4 nav-link">COMMS</a>
-	<a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
+    <a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
     <a href="seccodgen.html" class="lcars-block color-5 nav-link">SEC_902</a>
     <div class="lcars-curve-joint"></div>
 </div>
@@ -239,7 +239,7 @@ permalink: /subspaceblog.html
 
             <div class="comms-section">
                 <h3>SUBSPACE // INCOMING TRANSMISSIONS</h3>
-                <div class="comments-list" id="list-{{ post.slug }}"></div>
+                <div class="comments-list" id="list-${post.slug}"></div>
 
                 <form class="comment-form" onsubmit="transmitComment(event, this, '{{ post.slug }}')">
                     <div class="form-row">
