@@ -196,7 +196,7 @@ permalink: /comms.html
             margin-left: 15px;
             transition: 0.2s;
             text-transform: uppercase;
-            display: none; /* Nascosto di default */
+            display: none;
         }
         .btn-abort:hover { filter: brightness(1.2); background-color: #FF9900; }
 
@@ -252,7 +252,7 @@ permalink: /comms.html
 
     <form class="chat-form" onsubmit="transmitGlobalMessage(event, this)">
         <div class="form-row">
-            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId" oninput="checkAdminPrivileges(); updatePresence();">
+            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId" oninput="checkAdminPrivileges()">
             <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode" oninput="checkAdminPrivileges()">
             <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText" onkeydown="handleChatSubmit(event)"></textarea>
             <button type="submit" class="btn-send">TRANSMIT</button>
@@ -298,7 +298,6 @@ permalink: /comms.html
         }
     }
 
-    // Controlla se le credenziali inserite sono quelle Admin per mostrare/nascondere i bottoni
     function checkAdminPrivileges() {
         const senderVal = document.getElementById('senderId').value.trim().toUpperCase();
         const authVal = document.getElementById('authCode').value.trim().toUpperCase();
@@ -341,18 +340,15 @@ permalink: /comms.html
                 const state = presenceChannel.presenceState();
                 renderOnlineUsers(state);
             })
-            .subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    updatePresence();
-                }
-            });
+            .subscribe();
     }
 
     function updatePresence() {
         const senderInput = document.getElementById('senderId');
-        const currentUserId = senderInput.value.trim().toUpperCase() || "UNKNOWN_TERMINAL";
+        const currentUserId = senderInput.value.trim().toUpperCase();
         
-        if (presenceChannel) {
+        // Registra la presenza solo se l'ID è valido e non è l'account ADMIN master
+        if (presenceChannel && currentUserId && currentUserId !== "ADMIN") {
             presenceChannel.track({
                 username: currentUserId,
                 online_at: new Date().toISOString()
@@ -401,7 +397,7 @@ permalink: /comms.html
 
         if (data) {
             data.forEach(item => appendMessage(item, false));
-            checkAdminPrivileges(); // Sincronizza lo stato visivo dei pulsanti dopo il caricamento
+            checkAdminPrivileges();
             scrollToBottom();
         }
     }
@@ -426,7 +422,7 @@ permalink: /comms.html
         chatMatrix.appendChild(msgNode);
         
         if (triggerScroll) {
-            checkAdminPrivileges(); // Controlla se mostrarlo sul nuovo messaggio appena renderizzato
+            checkAdminPrivileges();
             scrollToBottom();
         }
     }
@@ -486,15 +482,13 @@ permalink: /comms.html
         }
 
         textInput.value = '';
-        updatePresence();
+        updatePresence(); // Aggiorna la lista stanze solo ora che il messaggio è partito con successo
     }
 
-    // Funzione di cancellazione distruttiva blindata per l'ADMIN
     async function abortGlobalTransmission(button) {
         const senderVal = document.getElementById('senderId').value.trim().toUpperCase();
         const authVal = document.getElementById('authCode').value.trim().toUpperCase();
 
-        // Controllo di sicurezza preventivo sulle credenziali attuali nel form
         if (senderVal !== ADMIN_SENDER || authVal !== ADMIN_KEY) {
             alert("TERMINAL OVERRIDE FAILED: ILLEGAL ACCESS PROTOCOL.");
             return;
