@@ -1,0 +1,373 @@
+---
+permalink: /comms.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ulysses Comms Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+
+        body {
+            background-color: black;
+            color: #FF9900;
+            font-family: 'Antonio', sans-serif;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDE LCARS FRAME STRUCTURE */
+        .lcars-left {
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            background-color: transparent;
+            margin-top: 25px;
+            flex-shrink: 0;
+        }
+
+        .lcars-block {
+            height: 45px;
+            margin-bottom: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 45px;
+            padding-right: 15px;
+            text-align: right;
+            border-radius: 0 15px 15px 0;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .lcars-block.nav-link:hover {
+            filter: brightness(1.3);
+            padding-right: 25px;
+        }
+
+        .lcars-curve-joint {
+            background-color: #9999FF;
+            height: 60px;
+            border-radius: 0 70px 0 0;
+            margin-bottom: -15px;
+        }
+
+        /* LCARS Colors */
+        .color-1 { background-color: #FF9900; }
+        .color-2 { background-color: #CC99CC; }
+        .color-3 { background-color: #FFCC33; }
+        .color-4 { background-color: #9999FF; }
+        .color-5 { background-color: #FF6666; }
+
+        /* MAIN PANEL */
+        .main-frame {
+            flex-grow: 1;
+            padding: 40px;
+            border-left: 20px solid #CC99CC; /* Colore Comms dedicato */
+            border-top: 45px solid #CC99CC;
+            border-top-left-radius: 70px;
+            margin-top: 25px;
+            margin-right: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 70px);
+            box-sizing: border-box;
+        }
+
+        h1 { font-size: 3.5rem; color: #CC99CC; margin: 0; letter-spacing: 3px; line-height: 1; }
+        .sub-title { color: #FFCC33; font-size: 1.2rem; margin-bottom: 25px; }
+
+        /* CHAT CONTAINER */
+        .chat-container {
+            flex-grow: 1;
+            background-color: #0c0c12;
+            border: 1px solid #333344;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 20px;
+            max-width: 1000px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 8px; }
+        .chat-messages::-webkit-scrollbar-track { background: #000; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #CC99CC; border-radius: 4px; }
+
+        /* CHAT MESSAGE ITEM */
+        .msg-item {
+            background-color: #050508;
+            border-left: 5px solid #FF9900;
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .msg-content { flex-grow: 1; }
+        .msg-meta { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.95rem; 
+            color: #FFCC33; 
+            font-weight: bold; 
+            margin-bottom: 4px; 
+        }
+        .msg-text { color: #DDDDDD; font-size: 1.1rem; text-transform: none; letter-spacing: 0.5px; }
+
+        /* BUTTON ABORT/DELETE */
+        .btn-abort {
+            background-color: #FF6666;
+            color: black;
+            border: none;
+            font-family: 'Antonio', sans-serif;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 15px;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-abort:hover { filter: brightness(1.2); background-color: #FF9900; }
+
+        /* CHAT INPUT FORM */
+        .chat-form { max-width: 1000px; }
+        .form-row { display: flex; gap: 10px; }
+        
+        .chat-form input, .chat-form textarea {
+            background-color: #111; border: 1px solid #444; color: #FF9900;
+            font-family: 'Antonio', sans-serif; padding: 10px; font-size: 1.1rem; border-radius: 5px; box-sizing: border-box;
+        }
+        .chat-form .input-sender { width: 20%; text-transform: uppercase; }
+        .chat-form .input-auth { width: 15%; text-transform: uppercase; }
+        .chat-form .input-text { width: 50%; height: 42px; resize: none; text-transform: none; }
+        .chat-form input:focus, .chat-form textarea:focus { outline: none; border-color: #CC99CC; }
+
+        .btn-send {
+            width: 15%; background-color: #CC99CC; color: black; border: none;
+            font-family: 'Antonio', sans-serif; font-weight: bold; font-size: 1rem;
+            padding: 0 10px; cursor: pointer; border-radius: 5px; transition: 0.2s; height: 42px; text-transform: uppercase;
+        }
+        .btn-send:hover { filter: brightness(1.2); background-color: #FFCC33; }
+
+        .footer { margin-top: auto; color: #444; font-size: 0.9rem; background-color: black; padding-top: 10px; border-top: 1px solid #222; }
+    </style>
+</head>
+<body>
+
+<div class="lcars-left">
+    <a href="index.html" class="lcars-block color-1 nav-link">SYS_LOG</a>
+    <a href="#archive" class="lcars-block color-2 nav-link">ARCHIVE</a>
+    <a href="subspaceblog.html" class="lcars-block color-3 nav-link">SUBSPACE</a>
+    <a href="comms.html" class="lcars-block color-4 nav-link">COMMS</a>
+    <a href="stardate-converter-lcars_v3.html" class="lcars-block color-2 nav-link">CONVERTER</a>
+    <a href="seccodgen.html" class="lcars-block color-5 nav-link">SEC_902</a>
+    <div class="lcars-curve-joint"></div>
+</div>
+
+<div class="main-frame">
+    <h1>SUBSPACE COMMS TERMINAL</h1>
+    <div class="sub-title">CHANNEL // GLOBAL_COMMS_MATRIX // REALTIME LINK</div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMatrix">
+            </div>
+    </div>
+
+    <form class="chat-form" onsubmit="transmitGlobalMessage(event, this)">
+        <div class="form-row">
+            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId">
+            <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode">
+            <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText"></textarea>
+            <button type="submit" class="btn-send">TRANSMIT</button>
+        </div>
+    </form>
+
+    <div class="footer">
+        LCARS COMMS FREQUENCY ACTIVE | FREQ: 42.1 GHz | SECURE TRANSFERS ONLY
+    </div>
+</div>
+
+<script>
+    // --- LCARS PROTOCOL INITIALIZATION ---
+    const SUPABASE_URL = "https://dvjtdszdzcdatqextzrz.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_y2ndok49LIbaDl7C89aiGg_lABxwt_u";
+    
+    const ADMIN_SENDER = "ADMIN";
+    const ADMIN_KEY = "SIGMA-THETA-9-7-ALPHA"; 
+    const GLOBAL_POST_ID = "GLOBAL_COMMS"; // Identificativo unico per la chat globale
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function convertTNG(day, month, year, hour, minute) {
+        const futureYear = year + 386;
+        const date = new Date(futureYear, month - 1, day, hour, minute);
+        const utcMs = date.getTime();
+        const tngEpoch = new Date(2364, 0, 1).getTime();
+        const days = (utcMs - tngEpoch) / 86400000;
+        const sd = (days / 365.2422) * 1000;
+        return sd.toFixed(1);
+    }
+
+    function getFutureStardate() {
+        const now = new Date();
+        return convertTNG(now.getDate(), now.getMonth() + 1, now.getFullYear(), now.getHours(), now.getMinutes());
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadGlobalChat();
+        
+        // Attiviamo il Realtime ascoltando i nuovi inserimenti sulla tabella 'transmissions'
+        supabaseClient
+            .channel('public:transmissions')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transmissions' }, payload => {
+                if (payload.new.post_id === GLOBAL_POST_ID) {
+                    appendMessage(payload.new);
+                }
+            })
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transmissions' }, payload => {
+                loadGlobalChat(); // Ricarica la chat se un messaggio viene cancellato
+            })
+            .subscribe();
+    });
+
+    // --- CHAT CORE FUNCTIONS ---
+
+    async function loadGlobalChat() {
+        const { data, error } = await supabaseClient
+            .from('transmissions')
+            .select('*')
+            .eq('post_id', GLOBAL_POST_ID)
+            .order('id', { ascending: true });
+        
+        if (error) {
+            console.error("Subspace interference detected:", error);
+            return;
+        }
+
+        const chatMatrix = document.getElementById('chatMatrix');
+        chatMatrix.innerHTML = '';
+
+        if (data) {
+            data.forEach(item => appendMessage(item, false));
+            scrollToBottom();
+        }
+    }
+
+    function appendMessage(item, triggerScroll = true) {
+        const chatMatrix = document.getElementById('chatMatrix');
+        
+        // Evitiamo duplicati visivi se il realtime ricarica ciò che è già presente
+        if (document.querySelector(`[data-id="${item.id}"]`)) return;
+
+        const msgNode = document.createElement('div');
+        msgNode.className = 'msg-item';
+        msgNode.setAttribute('data-id', item.id);
+        msgNode.innerHTML = `
+            <div class="msg-content">
+                <div class="msg-meta">
+                    <span>SENDER: ${item.sender}</span>
+                    <span>STARDATE: ${item.stardate}</span>
+                </div>
+                <div class="msg-text">${item.message}</div>
+            </div>
+            <button class="btn-abort" onclick="abortGlobalTransmission(this)">DELETE</button>
+        `;
+        chatMatrix.appendChild(msgNode);
+        
+        if (triggerScroll) {
+            scrollToBottom();
+        }
+    }
+
+    async function transmitGlobalMessage(event, form) {
+        event.preventDefault();
+        
+        const senderInput = document.getElementById('senderId');
+        const authInput = document.getElementById('authCode');
+        const textInput = document.getElementById('msgText');
+        
+        const exactStardate = getFutureStardate();
+        const senderValue = senderInput.value.toUpperCase();
+        const authValue = authInput.value.toUpperCase();
+
+        if (senderValue === ADMIN_SENDER && authValue !== ADMIN_KEY) {
+            alert("ACCESS DENIED: INVALID STARFLEET COMMAND CREDENTIALS.");
+            return;
+        }
+
+        const { error } = await supabaseClient.from('transmissions').insert([
+            { 
+                sender: senderValue, 
+                auth_code: authValue, 
+                message: textInput.value, 
+                stardate: exactStardate,
+                post_id: GLOBAL_POST_ID // Canale globale della chat
+            }
+        ]);
+
+        if (error) {
+            alert("TRANSMISSION FAILED: SUBSPACE LINK OFFLINE.");
+            console.error(error);
+            return;
+        }
+
+        textInput.value = ''; // Pulisce solo il testo, tiene in memoria SENDER ID e AUTH per comodità
+        // Nota: non serve richiamare loadGlobalChat() qui, ci pensa il Realtime automatico!
+    }
+
+    async function abortGlobalTransmission(button) {
+        const msgItem = button.closest('.msg-item');
+        const transmissionId = msgItem.getAttribute('data-id');
+        
+        const inputKey = prompt("ENTER TRANSMISSION AUTH CODE OR MASTER COMMAND KEY TO ABORT:");
+        if (inputKey === null) return; 
+
+        const verifiedKey = inputKey.toUpperCase();
+
+        const { data, error } = await supabaseClient.from('transmissions').select('auth_code').eq('id', transmissionId).single();
+        
+        if (error || !data) {
+            alert("ERROR: TRANSMISSION UNRESOLVED IN CENTRAL MATRIX.");
+            return;
+        }
+
+        if (verifiedKey === data.auth_code || verifiedKey === ADMIN_KEY) {
+            const { error: delError } = await supabaseClient.from('transmissions').delete().eq('id', transmissionId);
+            if (delError) {
+                alert("DELETION PROTOCOL FAILED.");
+            }
+        } else {
+            alert("TERMINAL OVERRIDE FAILED: ILLEGAL ACCESS CODE.");
+        }
+    }
+
+    function scrollToBottom() {
+        const chatMatrix = document.getElementById('chatMatrix');
+        chatMatrix.scrollTop = chatMatrix.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
