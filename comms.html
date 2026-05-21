@@ -191,15 +191,14 @@ permalink: /comms.html
     <div class="sub-title">CHANNEL // GLOBAL_COMMS_MATRIX // REALTIME LINK</div>
 
     <div class="chat-container">
-        <div class="chat-messages" id="chatMatrix">
-            </div>
+        <div class="chat-messages" id="chatMatrix"></div>
     </div>
 
     <form class="chat-form" onsubmit="transmitGlobalMessage(event, this)">
         <div class="form-row">
             <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId">
             <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode">
-            <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText"></textarea>
+            <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText" onkeydown="handleChatSubmit(event)"></textarea>
             <button type="submit" class="btn-send">TRANSMIT</button>
         </div>
     </form>
@@ -233,6 +232,17 @@ permalink: /comms.html
     function getFutureStardate() {
         const now = new Date();
         return convertTNG(now.getDate(), now.getMonth() + 1, now.getFullYear(), now.getHours(), now.getMinutes());
+    }
+
+    // Intercettore del tasto invio nella casella di testo
+    function handleChatSubmit(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Impedisce la creazione di una nuova riga vuota
+            const form = event.target.closest('form');
+            if (form) {
+                form.requestSubmit(); // Sottomette il form simulando la pressione del tasto TRANSMIT
+            }
+        }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -333,7 +343,7 @@ permalink: /comms.html
             return;
         }
 
-        textInput.value = ''; // Pulisce solo il testo, tiene in memoria SENDER ID e AUTH per comodità
+        textInput.value = ''; // Pulisce solo l'input del testo. ID e AUTH rimangono inseriti per i prossimi messaggi.
         // Nota: non serve richiamare loadGlobalChat() qui, ci pensa il Realtime automatico!
     }
 
