@@ -160,12 +160,15 @@ permalink: /comms.html
             letter-spacing: 0.5px;
         }
 
-        /* CHAT MESSAGE ITEM (RIMOSSO BOTTONE DELETE) */
+        /* CHAT MESSAGE ITEM */
         .msg-item {
             background-color: #050508;
             border-left: 5px solid #FF9900;
             padding: 10px 15px;
             border-radius: 0 8px 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .msg-content { flex-grow: 1; }
@@ -178,6 +181,24 @@ permalink: /comms.html
             margin-bottom: 4px; 
         }
         .msg-text { color: #DDDDDD; font-size: 1.1rem; text-transform: none; letter-spacing: 0.5px; }
+
+        /* TASTO ABORT/DELETE (SOLO PER ADMIN) */
+        .btn-abort {
+            background-color: #FF6666;
+            color: black;
+            border: none;
+            font-family: 'Antonio', sans-serif;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 15px;
+            transition: 0.2s;
+            text-transform: uppercase;
+            display: none; /* Nascosto di default */
+        }
+        .btn-abort:hover { filter: brightness(1.2); background-color: #FF9900; }
 
         /* CHAT INPUT FORM */
         .chat-form { max-width: 1200px; }
@@ -225,15 +246,14 @@ permalink: /comms.html
 
         <div class="online-panel">
             <h3>ONLINE OFFICERS</h3>
-            <div class="users-list" id="usersList">
-                </div>
+            <div class="users-list" id="usersList"></div>
         </div>
     </div>
 
     <form class="chat-form" onsubmit="transmitGlobalMessage(event, this)">
         <div class="form-row">
-            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId" onchange="updatePresence()">
-            <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode">
+            <input type="text" placeholder="SENDER ID" required class="input-sender" id="senderId" oninput="checkAdminPrivileges(); updatePresence();">
+            <input type="password" placeholder="AUTH CODE" required class="input-auth" id="authCode" oninput="checkAdminPrivileges()">
             <textarea placeholder="TYPE SUBSPACE TRANSMISSION..." required class="input-text" id="msgText" onkeydown="handleChatSubmit(event)"></textarea>
             <button type="submit" class="btn-send">TRANSMIT</button>
         </div>
@@ -278,10 +298,23 @@ permalink: /comms.html
         }
     }
 
+    // Controlla se le credenziali inserite sono quelle Admin per mostrare/nascondere i bottoni
+    function checkAdminPrivileges() {
+        const senderVal = document.getElementById('senderId').value.trim().toUpperCase();
+        const authVal = document.getElementById('authCode').value.trim().toUpperCase();
+        
+        const deleteButtons = document.querySelectorAll('.btn-abort');
+        
+        if (senderVal === ADMIN_SENDER && authVal === ADMIN_KEY) {
+            deleteButtons.forEach(btn => btn.style.display = 'block');
+        } else {
+            deleteButtons.forEach(btn => btn.style.display = 'none');
+        }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         loadGlobalChat();
         
-        // 1. Canale Realtime per i messaggi della chat
         supabaseClient
             .channel('public:transmissions')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transmissions' }, payload => {
@@ -290,11 +323,10 @@ permalink: /comms.html
                 }
             })
             .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transmissions' }, () => {
-                loadGlobalChat(); // Se il trigger elimina roba vecchia di 24h, aggiorna la vista
+                loadGlobalChat();
             })
             .subscribe();
 
-        // 2. Inizializza il canale di presenza globale
         setupPresence();
     });
 
@@ -318,7 +350,6 @@ permalink: /comms.html
 
     function updatePresence() {
         const senderInput = document.getElementById('senderId');
-        // Se l'utente non ha ancora inserito un ID, lo tracciamo come "UNKNOWN_TERMINAL"
         const currentUserId = senderInput.value.trim().toUpperCase() || "UNKNOWN_TERMINAL";
         
         if (presenceChannel) {
@@ -335,7 +366,6 @@ permalink: /comms.html
         
         const uniqueUsernames = new Set();
 
-        // Estrae i nomi degli utenti attivi dal dizionario di presenza di Supabase
         Object.values(state).forEach(presencePresences => {
             presencePresences.forEach(p => {
                 if(p.username && p.username !== "UNKNOWN_TERMINAL") {
@@ -344,7 +374,6 @@ permalink: /comms.html
             });
         });
 
-        // Genera i badge grafici LCARS per gli utenti connessi
         uniqueUsernames.forEach(username => {
             const badge = document.createElement('div');
             badge.className = 'user-badge';
@@ -372,6 +401,7 @@ permalink: /comms.html
 
         if (data) {
             data.forEach(item => appendMessage(item, false));
+            checkAdminPrivileges(); // Sincronizza lo stato visivo dei pulsanti dopo il caricamento
             scrollToBottom();
         }
     }
@@ -391,10 +421,14 @@ permalink: /comms.html
                 </div>
                 <div class="msg-text">${item.message}</div>
             </div>
-        `; // <--- Rimosso completamente il bottone DELETE
+            <button class="btn-abort" onclick="abortGlobalTransmission(this)">DELETE</button>
+        `;
         chatMatrix.appendChild(msgNode);
         
-        if (triggerScroll) scrollToBottom();
+        if (triggerScroll) {
+            checkAdminPrivileges(); // Controlla se mostrarlo sul nuovo messaggio appena renderizzato
+            scrollToBottom();
+        }
     }
 
     async function transmitGlobalMessage(event, form) {
@@ -413,23 +447,28 @@ permalink: /comms.html
             return;
         }
 
-        // --- VERIFICA ID UNIVOCO ---
-        // Controlla se l'ID esiste già nel database globale
-        const { data: existingUser, error: checkError } = await supabaseClient
+        const { data: lastTransmission, error: checkError } = await supabaseClient
             .from('transmissions')
-            .select('auth_code')
+            .select('auth_code, created_at')
             .eq('sender', senderValue)
+            .order('id', { ascending: false })
             .limit(1);
 
-        if (!checkError && existingUser && existingUser.length > 0) {
-            // Se l'ID esiste, verifichiamo se il codice inserito corrisponde a quello memorizzato
-            if (existingUser[0].auth_code !== authValue) {
-                alert(`TRANSMISSION DENIED: SENDER ID "${senderValue}" IS RESERVED. INVALID AUTH CODE.`);
-                return;
+        if (!checkError && lastTransmission && lastTransmission.length > 0) {
+            const lastActiveDate = new Date(lastTransmission[0].created_at);
+            const nowTime = new Date();
+            
+            const diffInTime = nowTime.getTime() - lastActiveDate.getTime();
+            const diffInDays = diffInTime / (1000 * 3600 * 24);
+
+            if (diffInDays <= 7) {
+                if (lastTransmission[0].auth_code !== authValue) {
+                    alert(`TRANSMISSION DENIED: SENDER ID "${senderValue}" IS CURRENTLY RESERVED BY AN ACTIVE OFFICER. INVALID AUTH CODE.`);
+                    return;
+                }
             }
         }
 
-        // Se il controllo passa, inserisce il messaggio
         const { error } = await supabaseClient.from('transmissions').insert([
             { 
                 sender: senderValue, 
@@ -441,13 +480,39 @@ permalink: /comms.html
         ]);
 
         if (error) {
-            alert("TRANSMISSION FAILED: INTERFERENCE DETECTED OR UNEXPECTED DATABASE ERROR.");
+            alert("TRANSMISSION FAILED: INTERFERENCE DETECTED.");
             console.error(error);
             return;
         }
 
         textInput.value = '';
-        updatePresence(); // Sincronizza il nome definitivo nella colonna online
+        updatePresence();
+    }
+
+    // Funzione di cancellazione distruttiva blindata per l'ADMIN
+    async function abortGlobalTransmission(button) {
+        const senderVal = document.getElementById('senderId').value.trim().toUpperCase();
+        const authVal = document.getElementById('authCode').value.trim().toUpperCase();
+
+        // Controllo di sicurezza preventivo sulle credenziali attuali nel form
+        if (senderVal !== ADMIN_SENDER || authVal !== ADMIN_KEY) {
+            alert("TERMINAL OVERRIDE FAILED: ILLEGAL ACCESS PROTOCOL.");
+            return;
+        }
+
+        const msgItem = button.closest('.msg-item');
+        const transmissionId = msgItem.getAttribute('data-id');
+        
+        if (!confirm("PROCEED WITH BLACKOUT PROTOCOL ON THIS TRANSMISSION?")) return;
+
+        const { error: delError } = await supabaseClient
+            .from('transmissions')
+            .delete()
+            .eq('id', transmissionId);
+
+        if (delError) {
+            alert("DELETION PROTOCOL FAILED.");
+        }
     }
 
     function scrollToBottom() {
