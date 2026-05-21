@@ -266,8 +266,8 @@
                     <label>Minute</label>
                     <input type="number" id="tosMinute" value="0" min="0" max="59">
                 </div>
-                <button id="btnConvertTOS">Convert to TOS Stardate</button>
                 <button class="btn-now" id="btnNowTOS">Current Date</button>
+                <button id="btnConvertTOS">Convert to TOS Stardate</button>
             </div>
             <div class="value-res" id="tosResult">LCARS CORE: Awaiting chronological matrix parameters...</div>
         </div>
@@ -300,8 +300,8 @@
                     <label>Minute</label>
                     <input type="number" id="tngMinute" value="0" min="0" max="59">
                 </div>
-                <button id="btnConvertTNG">Convert to TNG/STO Stardate</button>
                 <button class="btn-now" id="btnNowTNG">Current Date</button>
+                <button id="btnConvertTNG">Convert to TNG/STO Stardate</button>
             </div>
             <div class="value-res" id="tngResult">LCARS CORE: Awaiting chronological matrix parameters...</div>
         </div>
@@ -341,11 +341,9 @@
         document.getElementById('btnInverseTOS').addEventListener('click', inverseTOS);
         document.getElementById('btnInverseTNG').addEventListener('click', inverseTNG);
         
-        // Listener per i nuovi pulsanti d'aggiornamento
         document.getElementById('btnNowTOS').addEventListener('click', syncTOSToNow);
         document.getElementById('btnNowTNG').addEventListener('click', syncTNGToNow);
 
-        // Al caricamento iniziale imposta la data odierna
         setInitialDates();
     });
 
@@ -363,7 +361,6 @@
         document.getElementById('tngMinute').value = now.getMinutes();
     }
 
-    // Funzione per sincronizzare i selettori TOS mantenendo intatto l'anno base canonico
     function syncTOSToNow() {
         const now = new Date();
         document.getElementById('tosDay').value = now.getDate();
@@ -372,12 +369,11 @@
         document.getElementById('tosMinute').value = now.getMinutes();
     }
 
-    // Funzione per sincronizzare i selettori TNG allineandoli all'anno reale corretto + 386 anni
     function syncTNGToNow() {
         const now = new Date();
         document.getElementById('tngDay').value = now.getDate();
         document.getElementById('tngMonth').value = now.getMonth() + 1;
-        document.getElementById('tngYear').value = now.getFullYear() + 386; // Mantiene la continuità temporale futura TNG
+        document.getElementById('tngYear').value = now.getFullYear() + 386; 
         document.getElementById('tngHour').value = now.getHours();
         document.getElementById('tngMinute').value = now.getMinutes();
     }
