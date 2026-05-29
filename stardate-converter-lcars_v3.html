@@ -290,7 +290,7 @@
                 </div>
                 <div class="input-field">
                     <label>Year</label>
-                    <input type="number" id="tngYear" value="2412" style="width:100px;">
+                    <input type="number" id="tngYear" value="2364" style="width:100px;">
                 </div>
                 <div class="input-field">
                     <label>Hour</label>
@@ -413,7 +413,7 @@
 
         const tngEpoch = new Date(2364, 0, 1).getTime();
         const days = (utcMs - tngEpoch) / 86400000;
-        const sd = days / 365.2422 * 1000;
+        const sd = 41000 + (days / 365.2422 * 1000);
 
         const container = document.getElementById('tngResult');
         container.classList.add('active-tng');
@@ -437,7 +437,7 @@
         let sd = parseFloat(document.getElementById('invTNG').value);
         if (isNaN(sd)) return alert("CRITICAL ERROR: Input a valid numeric vector for TNG/STO Stardate.");
         const tngEpoch = new Date(2364, 0, 1).getTime();
-        const days = sd * 365.2422 / 1000;
+        const days = (sd - 41000) * 365.2422 / 1000;
         const d = new Date(tngEpoch + days * 86400000);
         showInverseResult(d, "TNG/STO (24th–25th Century Protocol)");
     }
