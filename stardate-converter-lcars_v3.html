@@ -411,7 +411,7 @@
         const date = new Date(year, month-1, day, hour, minute);
         const utcMs = date.getTime();
 
-        const tngEpoch = new Date(2364, 0, 1).getTime();
+        const tngEpoch = new Date(2412, 0, 1).getTime();
         const days = (utcMs - tngEpoch) / 86400000;
         const sd = days / 365.2422 * 1000;
 
